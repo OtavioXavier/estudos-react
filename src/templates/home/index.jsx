@@ -5,6 +5,7 @@ import { Component } from "react";
 import { loadPosts } from "../../utils/load-posts";
 import { Posts } from "../../components/Posts";
 import { Button } from "../../components/Button";
+import { TextInput } from '../../components/Textinput';
 
 export class Home extends Component {
   state = {
@@ -12,6 +13,7 @@ export class Home extends Component {
     allPosts: [],
     page: 0,
     postsPerPage: 4,
+    searchValue: "",
   };
 
   async componentDidMount() {
@@ -39,19 +41,43 @@ export class Home extends Component {
     console.log(page, postsPerPage, nextPage, nextPage + postsPerPage);
   };
 
+  handleChange = (e) => {
+    const { value } = e.target;
+    this.setState({ searchValue: value });
+  };
+
   render() {
-    const { posts, page, postsPerPage, allPosts } = this.state;
+    const { posts, page, postsPerPage, allPosts, searchValue } = this.state;
     const noMorePosts = page + postsPerPage >= allPosts.length;
+
+    const filteredPosts = !!searchValue
+      ? allPosts.filter((post) => {
+          return post.title.toLowerCase().includes(searchValue.toLowerCase());
+        })
+      : posts;
 
     return (
       <section className="container">
-        <Posts posts={posts} />
-        <div className='button-container'>
-          <Button
-            text={"load More Posts"}
-            onClick={this.loadMorePosts}
-            disabled={noMorePosts}
-          ></Button>
+        <div className="searchContainer">
+        {!!searchValue && <h1>Search Value: {searchValue}</h1>}
+
+        <TextInput searchValue={searchValue} handleChange={this.handleChange}/>
+
+        </div>
+
+        {filteredPosts.length > 0 && <Posts posts={filteredPosts} />}
+
+        {filteredPosts.length === 0 && <p className="not-exists">Posts not exists! XD</p>}
+
+
+        <div className="button-container">
+          {!searchValue && (
+            <Button
+              text={"load More Posts"}
+              onClick={this.loadMorePosts}
+              disabled={noMorePosts}
+            ></Button>
+          )}
         </div>
       </section>
     );
