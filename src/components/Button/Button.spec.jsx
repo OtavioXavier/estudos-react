@@ -3,7 +3,7 @@ import { Button } from ".";
 
 import userEvent from "@testing-library/user-event";
 
-describe("<Button />", () => {
+describe('<Button />', () => {
   it('should render the button with the text "load more"', () => {
     render(<Button text="Load more" />);
 
